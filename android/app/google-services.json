@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "985325206814",
+    "project_id": "afar-bda73",
+    "storage_bucket": "afar-bda73.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985325206814:android:a5531c0c6ab14d216e1d0f",
+        "android_client_info": {
+          "package_name": "com.example.afar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "985325206814-soh5i88l94c1bp4kqlpp34pligg262o1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzMN_idivQO3Vaak5XG_VY2TiDtb1QnBI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985325206814-soh5i88l94c1bp4kqlpp34pligg262o1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
