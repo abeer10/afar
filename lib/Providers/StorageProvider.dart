@@ -15,7 +15,7 @@ class StorageProvider {
         .set(({
         'date': dateNow,
         'timeIn': timeNow,
-        'timeOut' : null,
+        'timeOut' : "00:00",
       })).then((value) {
         return "attendance marked";
       });

@@ -50,22 +50,6 @@ class _AdminViewState extends State<AdminView> {
           ),
         ],
       ),
-      floatingActionButton: new FloatingActionButton(
-        elevation: 20.0,
-        tooltip: "Adding new Employee",
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-          return EmployeeRegistration();
-        })),
-        backgroundColor: Colors.transparent,
-        child: SizedBox(
-          child: Icon(
-            Icons.add_circle,
-            size: 60.0,
-            color: Colors.greenAccent.shade400,
-          ),
-        ),
-      ),
       body: Column(
         // padding: EdgeInsets.all(7.0),
         children: [
@@ -173,11 +157,11 @@ class _AdminViewState extends State<AdminView> {
                                         ),
                                         onTap: () async {
                                           print(FirebaseAuth.instance.currentUser.uid);
-                                          await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).
+                                          await FirebaseFirestore.instance.collection("users").doc(snapshot.data[index].data()["uid"]).
                                           update({"approve" : true}).then((value){
 
                                             Scaffold.of(context).showSnackBar(
-                                                SnackBar(content: Text("User Deleted Successfully")));
+                                                SnackBar(content: Text("User Approved Successfully")));
                                             setState(() {
 
                                             });

@@ -18,6 +18,9 @@ class _StaffViewState extends State<StaffView> {
   var year;
   var month;
   var timeNow;
+  DateTime now;
+  int weekday, attendance;
+  double percentage = 0;
   String mark;
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Future getAttendance() async {
@@ -41,9 +44,10 @@ class _StaffViewState extends State<StaffView> {
         .doc(year)
         .collection(month).doc(dateNow)
         .get();
-    setState(() {
+
       mark = documentSnapshot.data()["timeIn"];
-    });
+      print(mark);
+
 
   }
 
@@ -55,21 +59,38 @@ class _StaffViewState extends State<StaffView> {
     timeNow = "${now.hour}:${now.minute}";
   }
 
+
+  calculateAttendancePercentage(int weekday, int attendance){
+    if(weekday == 7){
+      ++attendance;
+      percentage = (attendance/now.day) * 100;
+      setState(() {
+
+      });
+    } else {
+      percentage = (attendance/now.day) * 100;
+      setState(() {
+      });
+    }
+  }
+
   @override
   void initState() {
-    getDailyAttendance();
+   // getDailyAttendance();
     // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
+     now = DateTime.now();
      dateNow = "${now.year}-${now.month}-${now.day}";
      year = now.year.toString();
      month = now.month.toString();
      timeNow = "${now.hour}:${now.minute}";
     String mark = "";
+    getAttendance();
+
 
     return FutureBuilder<DocumentSnapshot>(
       future: user.doc(FirebaseAuth.instance.currentUser.uid).get(),
@@ -263,7 +284,7 @@ class _StaffViewState extends State<StaffView> {
                                         ),
                                       ),
                                       new Text(
-                                        '89%',
+                                        '$percentage'.substring(0,2) ,
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -327,15 +348,23 @@ class _StaffViewState extends State<StaffView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            getDateTime();
-                            StorageProvider()
-                                .markAttendance(dateNow, timeNow, year, month)
-                                .then((value) {
-                              print("attendance Marked");
-                            });
-                            setState(() {
+                            if( mark == null) {
+                              getDateTime();
+                              StorageProvider()
+                                  .markAttendance(
+                                  dateNow, timeNow, year, month)
+                                  .then((value) {
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(content: Text("Attendance marked Successfully")));
+                              });
 
-                            });
+                              setState(() {
+                              });
+                            }
+                              else {
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text("Attendance already marked")));
+                            }
                           },
                           child: Container(
                             height: 40,
@@ -359,20 +388,19 @@ class _StaffViewState extends State<StaffView> {
                         ),
                         InkWell(
                           onTap: () {
-                            if( mark == null) {
-                              getDateTime();
-                              StorageProvider()
-                                  .markAttendanceOut(
-                                  dateNow, timeNow, year, month)
-                                  .then((value) {
-                                print("out attentdance");
-                              });
-                              setState(() {
+                            getDateTime();
+                            StorageProvider()
+                                .markAttendanceOut(
+                                dateNow, timeNow, year, month)
+                                .then((value) {
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text("Attendance marked Successfully")));
+                            });
 
-                              });
-                            } else {
-                              print("attendance already marked");
-                            }
+                            setState(() {
+
+                            });
+
                           },
                           child: Container(
                             height: 40,
@@ -464,6 +492,7 @@ class _StaffViewState extends State<StaffView> {
                                 itemBuilder: (BuildContext context, int index){
                                   print(FirebaseAuth.instance.currentUser.uid);
                                   print(snapshot.data[index].data()["date"]);
+                                  calculateAttendancePercentage(weekday, snapshot.data.length);
                                 return Container(
                                   height: 70,
                                   child: new Card(

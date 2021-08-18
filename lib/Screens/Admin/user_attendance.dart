@@ -337,11 +337,13 @@ class _UserAttendanceState extends State<UserAttendance> {
                                                            "timeOut" : timeOut.text
                                                        })
                                                            .then((value) {
+                                                         Navigator.pop(context);
+                                                         Scaffold.of(context).showSnackBar(
+                                                             SnackBar(content: Text("User Attendance Updated Successfully")));
                                                          setState(() {
-                                                           print("deleted");
                                                          });
                                                        });
-                                                       Navigator.pop(context);
+
                                                        }, child: Text("Ok")),
 
                                                    ],
@@ -377,8 +379,9 @@ class _UserAttendanceState extends State<UserAttendance> {
                                                  .collection("attendance").doc(year).collection(month).doc(snapshot.data[index].data()["date"]).delete()
                                              .then((value) {
                                                setState(() {
-                                                 print("deleted");
                                                });
+                                               Scaffold.of(context).showSnackBar(
+                                                   SnackBar(content: Text("User Attendance Deleted Successfully")));
                                              });
                                             },
                                             child: Container(

@@ -1,4 +1,5 @@
 import 'package:afar/Screens/User/employeeRegistration.dart';
+import 'package:afar/login_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +37,7 @@ class _AfarState extends State<Afar> {
           return new MaterialApp(
             debugShowCheckedModeBanner: false,
             title: "AFAR - Facial Attendance Reader",
-            home: new Login(),
+            home: new CheckLogin(),
             theme: ThemeData(
               primaryColor: Colors.greenAccent.shade400,
               // fontFamily: 'Raleway',
