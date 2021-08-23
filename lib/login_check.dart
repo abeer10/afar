@@ -41,7 +41,6 @@ class _CheckLoginState extends State<CheckLogin> {
 
 @override
   void initState() {
-
   FirebaseAuth.instance
       .authStateChanges()
       .listen((User user) {

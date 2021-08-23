@@ -8,12 +8,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../profile.dart';
+
 class AdminView extends StatefulWidget {
   @override
   _AdminViewState createState() => _AdminViewState();
 }
 
 class _AdminViewState extends State<AdminView> {
+  var user;
   // StorageProvider storageProvider;
   Future getUser() async {
     QuerySnapshot querySnapshot =
@@ -21,6 +24,22 @@ class _AdminViewState extends State<AdminView> {
     return querySnapshot.docs;
   }
 
+  getAdmin()async {
+
+    user =  await FirebaseFirestore.instance.collection("admin").doc(FirebaseAuth.instance.currentUser.uid).get();
+    print(user["email"]);
+    setState(() {
+
+    });
+
+  }
+
+  @override
+  void initState() {
+    getAdmin();
+    // TODO: implement initState
+    super.initState();
+  }
 
 
   @override
@@ -33,24 +52,121 @@ class _AdminViewState extends State<AdminView> {
           'Admin Dashoard',
           style: TextStyle(fontSize: 24.0, color: Colors.white),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: InkWell(
-                onTap: (){
-                  AuthProvider().userLogOut();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Login(),
-                    ),
-                  );
-                },
-                child: Icon(Icons.logout)),
-          ),
-        ],
+
       ),
-      body: Column(
+      endDrawer: new Drawer(
+        child: new ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            new DrawerHeader(
+              decoration:
+              BoxDecoration(color: Colors.greenAccent.shade400),
+              child: new Container(
+                padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    new Container(
+                      child: new CircleAvatar(
+                        backgroundImage: new NetworkImage(
+                            'https://i.pravatar.cc/150?img=3'),
+                        backgroundColor: Colors.white,
+                        radius: 48.0,
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            ),
+            new Padding(
+              padding: EdgeInsets.only(top: 10.0),
+            ),
+            new ListTile(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Profile(route: "admin",),
+                  ),
+                );
+              },
+              contentPadding: EdgeInsets.only(left: 40.0),
+              leading: new Container(
+                child: Icon(
+                  Icons.person_outline_sharp,
+                  size: 30.0,
+                  color: Colors.greenAccent.shade400,
+                ),
+              ),
+              title: new Text(
+                'My Profile',
+                style: TextStyle(color: Colors.black, fontSize: 14.0),
+              ),
+            ),
+            new Divider(
+              color: Colors.greenAccent.shade400,
+              height: 3.0,
+            ),
+//                  new ListTile(
+//                    onTap: () {
+//                      Navigator.push(
+//                        context,
+//                        MaterialPageRoute(
+//                          builder: (BuildContext context) {
+//                            return AdminView();
+//                          },
+//                        ),
+//                      );
+//                    },
+//                    contentPadding: EdgeInsets.only(left: 40.0),
+//                    leading: new Container(
+//                      child: Icon(
+//                        Icons.admin_panel_settings_outlined,
+//                        size: 35.0,
+//                        color: Colors.greenAccent.shade400,
+//                      ),
+//                    ),
+//                    title: new Text(
+//                      'Admin Panel',
+//                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+//                    ),
+//                  ),
+//                  new Divider(
+//                    color: Colors.greenAccent.shade400,
+//                    height: 3.0,
+//                  ),
+            new ListTile(
+              onTap: () {
+                AuthProvider().userLogOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Login(),
+                  ),
+                );
+              },
+              contentPadding: EdgeInsets.only(left: 40.0),
+              leading: new Container(
+                child: Icon(
+                  Icons.logout,
+                  size: 30.0,
+                  color: Colors.greenAccent.shade400,
+                ),
+              ),
+              title: new Text(
+                'Logout',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            new Divider(
+              color: Colors.greenAccent.shade400,
+              height: 3.0,
+            ),
+          ],
+        ),
+      ),
+      body: user == null ? Center(child: CircularProgressIndicator()) :  Column(
         // padding: EdgeInsets.all(7.0),
         children: [
           Expanded(

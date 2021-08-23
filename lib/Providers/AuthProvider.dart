@@ -47,6 +47,19 @@ class AuthProvider {
     }
   }
 
+  //Password Reset
+
+  @override
+  Future resetPassword(String email) async {
+      try {
+        await auth.sendPasswordResetEmail(email: email);
+      } catch (e, s) {
+        print(s);
+      }
+
+  }
+
+
   // User Logout
   Future userLogOut() async {
     await auth.signOut();

@@ -1,6 +1,7 @@
 import 'package:afar/Providers/AuthProvider.dart';
 import 'package:afar/Screens/Admin/admin_view.dart';
 import 'package:afar/Screens/User/employeeRegistration.dart';
+import 'package:afar/Screens/User/forgot_password.dart';
 import 'package:afar/Screens/User/staff_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -138,12 +139,22 @@ class _LoginState extends State<Login> {
                       new Padding(
                         padding: EdgeInsets.only(top: 15.0),
                       ),
-                      new Text(
-                        'Forgot your password? Recover',
-                        style: new TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal),
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgotPassword(),
+                            ),
+                          );
+                        },
+                        child: new Text(
+                          'Forgot your password? Recover',
+                          style: new TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal),
+                        ),
                       ),
                       new Padding(
                         padding: EdgeInsets.only(top: 25.0),
@@ -166,7 +177,8 @@ class _LoginState extends State<Login> {
                                 if (value == "Welcome")  {
                                   print(FirebaseAuth.instance.currentUser.uid);
 
-                                 if(emailController.text == "admin@gmail.com"){
+                var user =  await FirebaseFirestore.instance.collection("admin").doc(FirebaseAuth.instance.currentUser.uid).get();
+                                  if(user.exists){
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(

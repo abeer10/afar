@@ -2,6 +2,7 @@ import 'package:afar/Providers/AuthProvider.dart';
 import 'package:afar/Providers/StorageProvider.dart';
 import 'package:afar/Screens/Admin/admin_view.dart';
 import 'package:afar/Screens/User/login.dart';
+import 'package:afar/Screens/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,8 @@ class _StaffViewState extends State<StaffView> {
         .get();
 
       mark = documentSnapshot.data()["timeIn"];
+      setState(() {
+      });
       print(mark);
 
 
@@ -64,19 +67,19 @@ class _StaffViewState extends State<StaffView> {
     if(weekday == 7){
       ++attendance;
       percentage = (attendance/now.day) * 100;
-      setState(() {
-
-      });
+//      setState(() {
+//
+//      });
     } else {
       percentage = (attendance/now.day) * 100;
-      setState(() {
-      });
+//      setState(() {
+//      });
     }
   }
 
   @override
   void initState() {
-   // getDailyAttendance();
+    getDailyAttendance();
     // TODO: implement initState
     super.initState();
   }
@@ -88,8 +91,8 @@ class _StaffViewState extends State<StaffView> {
      year = now.year.toString();
      month = now.month.toString();
      timeNow = "${now.hour}:${now.minute}";
-    String mark = "";
     getAttendance();
+   // getDailyAttendance();
 
 
     return FutureBuilder<DocumentSnapshot>(
@@ -169,28 +172,35 @@ class _StaffViewState extends State<StaffView> {
                       ),
                     ),
                   ),
-//                  new Padding(
-//                    padding: EdgeInsets.only(top: 10.0),
-//                  ),
-//                  new ListTile(
-//                    onTap: () => debugPrint('My Profile'),
-//                    contentPadding: EdgeInsets.only(left: 40.0),
-//                    leading: new Container(
-//                      child: Icon(
-//                        Icons.person_outline_sharp,
-//                        size: 35.0,
-//                        color: Colors.greenAccent.shade400,
-//                      ),
-//                    ),
-//                    title: new Text(
-//                      'My Profile',
-//                      style: TextStyle(color: Colors.black, fontSize: 14.0),
-//                    ),
-//                  ),
-//                  new Divider(
-//                    color: Colors.greenAccent.shade400,
-//                    height: 3.0,
-//                  ),
+                  new Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                  ),
+                  new ListTile(
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Profile(route: "users",),
+                        ),
+                      );
+                    },
+                    contentPadding: EdgeInsets.only(left: 40.0),
+                    leading: new Container(
+                      child: Icon(
+                        Icons.person_outline_sharp,
+                        size: 30.0,
+                        color: Colors.greenAccent.shade400,
+                      ),
+                    ),
+                    title: new Text(
+                      'My Profile',
+                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                    ),
+                  ),
+                  new Divider(
+                    color: Colors.greenAccent.shade400,
+                    height: 3.0,
+                  ),
 //                  new ListTile(
 //                    onTap: () {
 //                      Navigator.push(
@@ -233,7 +243,7 @@ class _StaffViewState extends State<StaffView> {
                     leading: new Container(
                       child: Icon(
                         Icons.logout,
-                        size: 35.0,
+                        size: 30.0,
                         color: Colors.greenAccent.shade400,
                       ),
                     ),
@@ -284,7 +294,7 @@ class _StaffViewState extends State<StaffView> {
                                         ),
                                       ),
                                       new Text(
-                                        '$percentage'.substring(0,2) ,
+                                        '$percentage'.substring(0,5) ,
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -357,9 +367,7 @@ class _StaffViewState extends State<StaffView> {
                                 Scaffold.of(context).showSnackBar(
                                     SnackBar(content: Text("Attendance marked Successfully")));
                               });
-
-                              setState(() {
-                              });
+                              getDailyAttendance();
                             }
                               else {
                               Scaffold.of(context).showSnackBar(
@@ -492,7 +500,10 @@ class _StaffViewState extends State<StaffView> {
                                 itemBuilder: (BuildContext context, int index){
                                   print(FirebaseAuth.instance.currentUser.uid);
                                   print(snapshot.data[index].data()["date"]);
-                                  calculateAttendancePercentage(weekday, snapshot.data.length);
+                                  Future.delayed(const Duration(milliseconds: 500), () {
+                                    calculateAttendancePercentage(weekday, snapshot.data.length);
+                                  });
+
                                 return Container(
                                   height: 70,
                                   child: new Card(
