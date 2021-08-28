@@ -21,8 +21,8 @@ class _StaffViewState extends State<StaffView> {
   var timeNow;
   DateTime now;
   int weekday, attendance;
-  double percentage = 0;
-  String mark;
+  var percentage = 0.0;
+  String mark, out;
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Future getAttendance() async {
     print(year);
@@ -39,6 +39,7 @@ class _StaffViewState extends State<StaffView> {
   }
 
   getDailyAttendance() async {
+    print("In");
     DocumentSnapshot documentSnapshot = await user
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection("attendance")
@@ -47,8 +48,10 @@ class _StaffViewState extends State<StaffView> {
         .get();
 
       mark = documentSnapshot.data()["timeIn"];
+      out = documentSnapshot.data()["timeOut"];
       setState(() {
       });
+      print("abeer");
       print(mark);
 
 
@@ -82,6 +85,11 @@ class _StaffViewState extends State<StaffView> {
 
   @override
   void initState() {
+    now = DateTime.now();
+    dateNow = "${now.year}-${now.month}-${now.day}";
+    year = now.year.toString();
+    month = now.month.toString();
+    timeNow = "${now.hour}:${now.minute}";
     getDailyAttendance();
     // TODO: implement initState
     super.initState();
@@ -455,13 +463,13 @@ class _StaffViewState extends State<StaffView> {
                                         ),
                                       ),
                                       new Text(
-                                        '$percentage',
+                                        percentage.toStringAsFixed(2),
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 36.0,
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -557,25 +565,27 @@ class _StaffViewState extends State<StaffView> {
                         ),
                         InkWell(
                           onTap: () {
-                            getDateTime();
-                            StorageProvider()
-                                .markAttendanceOut(
-                                dateNow, timeNow, year, month)
-                                .then((value) {
-                              Scaffold.of(context).showSnackBar(
-                                  SnackBar(content: Text("Attendance marked Successfully")));
-                            });
+                            if( out == null) {
+                              getDateTime();
+                              StorageProvider()
+                                  .markAttendanceOut(
+                                  dateNow, timeNow, year, month)
+                                  .then((value) {
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(content: Text(
+                                        "Attendance marked Successfully")));
+                              });
 
-                            setState(() {
+                              setState(() {
 
-                            });
-
+                              });
+                            }
                           },
                           child: Container(
                             height: 40,
                             width: 150,
                             decoration: BoxDecoration(
-                              color: Colors.greenAccent.shade400,
+                              color: out ==null ? Colors.greenAccent.shade400 : Colors.grey.shade700,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: Center(
