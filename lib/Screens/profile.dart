@@ -13,9 +13,9 @@ class _ProfileState extends State<Profile> {
   var user;
 
   getUser()async {
-
+    print(widget.route);
     user =  await FirebaseFirestore.instance.collection(widget.route).doc(FirebaseAuth.instance.currentUser.uid).get();
-    print(user["email"]);
+    //print(user["email"]);
     setState(() {
     });
   }
@@ -112,7 +112,8 @@ class _ProfileState extends State<Profile> {
                       padding: const EdgeInsets.all(8.0),
                       child: Icon(Icons.perm_identity_rounded, color: Colors.greenAccent.shade400, size: 30,),
                     ),
-                    Text(user["empId"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
+                  widget.route != "admin" ?  Text(user["empId"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
+                  : Text("0000", style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
                   ],
                 ),
               ),

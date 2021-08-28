@@ -77,6 +77,9 @@ class _StaffViewState extends State<StaffView> {
     }
   }
 
+
+
+
   @override
   void initState() {
     getDailyAttendance();
@@ -107,7 +110,165 @@ class _StaffViewState extends State<StaffView> {
           return Text("Document does not exist");
         }
 
-        if (snapshot.connectionState == ConnectionState.done) {
+        if(snapshot.connectionState == ConnectionState.done && snapshot.data.data()["approve"] == false){
+          Map<String, dynamic> data = snapshot.data.data();
+          return Scaffold(
+            appBar: AppBar(
+              iconTheme: IconThemeData(color: Colors.white),
+              centerTitle: true,
+              backgroundColor: Colors.greenAccent.shade400,
+              title: Text(
+                'Home',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+                ),
+              ),
+            ),
+              endDrawer: new Drawer(
+                child: new ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    new DrawerHeader(
+                      decoration:
+                      BoxDecoration(color: Colors.greenAccent.shade400),
+                      child: new Container(
+                        padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                        child: new Row(
+                          children: [
+                            new Container(
+                              child: new CircleAvatar(
+                                backgroundImage: new NetworkImage(
+                                    'https://i.pravatar.cc/150?img=3'),
+                                backgroundColor: Colors.white,
+                                radius: 48.0,
+                              ),
+                            ),
+                            new Container(
+                              padding: EdgeInsets.only(left: 7.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  new Text(
+                                    '${data['name']}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22.0,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 7, 0, 0),
+                                  ),
+                                  new Text(
+                                    "ID: ${data['empId']}",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    new Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                    ),
+                    new ListTile(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Profile(route: "users",),
+                          ),
+                        );
+                      },
+                      contentPadding: EdgeInsets.only(left: 40.0),
+                      leading: new Container(
+                        child: Icon(
+                          Icons.person_outline_sharp,
+                          size: 30.0,
+                          color: Colors.greenAccent.shade400,
+                        ),
+                      ),
+                      title: new Text(
+                        'My Profile',
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                      ),
+                    ),
+                    new Divider(
+                      color: Colors.greenAccent.shade400,
+                      height: 3.0,
+                    ),
+//                  new ListTile(
+//                    onTap: () {
+//                      Navigator.push(
+//                        context,
+//                        MaterialPageRoute(
+//                          builder: (BuildContext context) {
+//                            return AdminView();
+//                          },
+//                        ),
+//                      );
+//                    },
+//                    contentPadding: EdgeInsets.only(left: 40.0),
+//                    leading: new Container(
+//                      child: Icon(
+//                        Icons.admin_panel_settings_outlined,
+//                        size: 35.0,
+//                        color: Colors.greenAccent.shade400,
+//                      ),
+//                    ),
+//                    title: new Text(
+//                      'Admin Panel',
+//                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+//                    ),
+//                  ),
+//                  new Divider(
+//                    color: Colors.greenAccent.shade400,
+//                    height: 3.0,
+//                  ),
+                    new ListTile(
+                      onTap: () {
+                        AuthProvider().userLogOut();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Login(),
+                          ),
+                        );
+                      },
+                      contentPadding: EdgeInsets.only(left: 40.0),
+                      leading: new Container(
+                        child: Icon(
+                          Icons.logout,
+                          size: 30.0,
+                          color: Colors.greenAccent.shade400,
+                        ),
+                      ),
+                      title: new Text(
+                        'Logout',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    new Divider(
+                      color: Colors.greenAccent.shade400,
+                      height: 3.0,
+                    ),
+                  ],
+                ),
+              ),
+            body: Center(
+              child: Text("Your Application is in review please wait"),
+            ),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.done && snapshot.data.data()["approve"] == true) {
           Map<String, dynamic> data = snapshot.data.data();
           return new Scaffold(
             appBar: AppBar(
@@ -294,7 +455,7 @@ class _StaffViewState extends State<StaffView> {
                                         ),
                                       ),
                                       new Text(
-                                        '$percentage'.substring(0,5) ,
+                                        '$percentage',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,

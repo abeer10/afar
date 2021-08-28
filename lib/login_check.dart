@@ -18,53 +18,70 @@ class _CheckLoginState extends State<CheckLogin> {
 
 
   checkUser() async {
-   var user =  await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).get();
-   if(user.exists){
-     Navigator.pushReplacement(
-       context,
-       MaterialPageRoute(
-         builder: (context) => StaffView(),
-       ),
-     );
-   } else {
-     Navigator.pushReplacement(
-       context,
-       MaterialPageRoute(
-         builder: (context) => AdminView(),
-       ),
-     );
-   }
-
-
-  }
-
-
-@override
-  void initState() {
-  FirebaseAuth.instance
-      .authStateChanges()
-      .listen((User user) {
-    if (user == null) {
+    var user = await FirebaseFirestore.instance.collection("users").doc(
+        FirebaseAuth.instance.currentUser.uid).get();
+    if (user.exists) {
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-          builder: (context) => Login(),
-    ));
+        context,
+        MaterialPageRoute(
+          builder: (context) => StaffView(),
+        ),
+      );
     } else {
-     checkUser();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Login(),
+        ),
+      );
     }
-  });
-  // TODO: implement initState
-    super.initState();
+
+    var admin = await FirebaseFirestore.instance.collection("admin").doc(
+        FirebaseAuth.instance.currentUser.uid).get();
+    if (admin.exists) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AdminView(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Login(),
+        ),
+      );
+    }
   }
 
 
-  @override
-  Widget build(BuildContext context){
-   return Scaffold(
-     body: Center(
-       child: CircularProgressIndicator(),
-     ),
-   );
+    @override
+    void initState() {
+      FirebaseAuth.instance
+          .authStateChanges()
+          .listen((User user) {
+        if (user == null) {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Login(),
+              ));
+        } else {
+          checkUser();
+        }
+      });
+      // TODO: implement initState
+      super.initState();
+    }
+
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
-}

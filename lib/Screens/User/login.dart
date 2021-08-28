@@ -176,8 +176,7 @@ class _LoginState extends State<Login> {
                               (value) async{
                                 if (value == "Welcome")  {
                                   print(FirebaseAuth.instance.currentUser.uid);
-
-                var user =  await FirebaseFirestore.instance.collection("admin").doc(FirebaseAuth.instance.currentUser.uid).get();
+                                 var user =  await FirebaseFirestore.instance.collection("admin").doc(FirebaseAuth.instance.currentUser.uid).get();
                                   if(user.exists){
                                   Navigator.pushReplacement(
                                     context,

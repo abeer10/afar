@@ -27,7 +27,7 @@ class _AdminViewState extends State<AdminView> {
   getAdmin()async {
 
     user =  await FirebaseFirestore.instance.collection("admin").doc(FirebaseAuth.instance.currentUser.uid).get();
-    print(user["email"]);
+   // print(user["email"]);
     setState(() {
 
     });
