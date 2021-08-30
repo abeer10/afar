@@ -539,7 +539,7 @@ class _StaffViewState extends State<StaffView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            if( mark != null) {
+                            if( mark == null) {
                               EasyGeofencing.startGeofenceService(
                                   pointedLatitude: "31.4640",
                                   pointedLongitude: "74.4426",
