@@ -26,7 +26,8 @@ dependencies:
   firebase_core:
   firebase_auth:
   image_picker:
-
+  geolocator:
+  easy_geofencing:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

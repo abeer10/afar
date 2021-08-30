@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:afar/Providers/AuthProvider.dart';
 import 'package:afar/Providers/StorageProvider.dart';
 import 'package:afar/Screens/Admin/admin_view.dart';
 import 'package:afar/Screens/User/login.dart';
 import 'package:afar/Screens/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:easy_geofencing/easy_geofencing.dart';
+import 'package:easy_geofencing/enums/geofence_status.dart';
 
 // import 'package:image_picker/image_picker.dart';
 
@@ -23,6 +29,12 @@ class _StaffViewState extends State<StaffView> {
   int weekday, attendance;
   var percentage = 0.0;
   String mark, out;
+  StreamSubscription<GeofenceStatus> geofenceStatusStream;
+  Geolocator geolocator = Geolocator();
+  String geofenceStatus = '';
+  bool isReady = false;
+  Position position;
+
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Future getAttendance() async {
     print(year);
@@ -527,16 +539,35 @@ class _StaffViewState extends State<StaffView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            if( mark == null) {
-                              getDateTime();
-                              StorageProvider()
-                                  .markAttendance(
-                                  dateNow, timeNow, year, month)
-                                  .then((value) {
-                                Scaffold.of(context).showSnackBar(
-                                    SnackBar(content: Text("Attendance marked Successfully")));
-                              });
-                              getDailyAttendance();
+                            if( mark != null) {
+                              EasyGeofencing.startGeofenceService(
+                                  pointedLatitude: "31.4640",
+                                  pointedLongitude: "74.4426",
+                                  radiusMeter: "250",
+                                  eventPeriodInSeconds: 5);
+                              if (geofenceStatusStream == null) {
+                                geofenceStatusStream = EasyGeofencing.getGeofenceStream()
+                                    .listen((GeofenceStatus status) {
+                                  print(status.toString());
+                                  if(status.toString() == "GeofenceStatus.exit"){
+                                    print("Exit");
+                                  } else {
+                                    getDateTime();
+                                    StorageProvider()
+                                        .markAttendance(
+                                        dateNow, timeNow, year, month)
+                                        .then((value) {
+                                      Scaffold.of(context).showSnackBar(
+                                          SnackBar(content: Text("Attendance marked Successfully")));
+                                    });
+                                    getDailyAttendance();
+                                  }
+//                                  setState(() {
+//                                    geofenceStatus = status.toString();
+//                                  });
+                                });
+                              }
+
                             }
                               else {
                               Scaffold.of(context).showSnackBar(
@@ -565,27 +596,46 @@ class _StaffViewState extends State<StaffView> {
                         ),
                         InkWell(
                           onTap: () {
-                            if( out == null) {
-                              getDateTime();
-                              StorageProvider()
-                                  .markAttendanceOut(
-                                  dateNow, timeNow, year, month)
-                                  .then((value) {
-                                Scaffold.of(context).showSnackBar(
-                                    SnackBar(content: Text(
-                                        "Attendance marked Successfully")));
-                              });
+                            if( out == null || out == "00:00") {
+                              EasyGeofencing.startGeofenceService(
+                                  pointedLatitude: "31.4640",
+                                  pointedLongitude: "74.4426",
+                                  radiusMeter: "250",
+                                  eventPeriodInSeconds: 5);
+                              if (geofenceStatusStream == null) {
+                                geofenceStatusStream = EasyGeofencing.getGeofenceStream()
+                                    .listen((GeofenceStatus status) {
+                                  print(status.toString());
+                                  if(status.toString() == "GeofenceStatus.exit"){
+                                    print("Exit");
+                                  } else {
+                                    getDateTime();
+                                    StorageProvider()
+                                        .markAttendance(
+                                        dateNow, timeNow, year, month)
+                                        .then((value) {
+                                      Scaffold.of(context).showSnackBar(
+                                          SnackBar(content: Text("Attendance marked Successfully")));
+                                    });
+                                    getDailyAttendance();
+                                  }
+//                                  setState(() {
+//                                    geofenceStatus = status.toString();
+//                                  });
+                                });
+                              }
 
-                              setState(() {
-
-                              });
+                            }
+                            else {
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(content: Text("Attendance already marked")));
                             }
                           },
                           child: Container(
                             height: 40,
                             width: 150,
                             decoration: BoxDecoration(
-                              color: out ==null ? Colors.greenAccent.shade400 : Colors.grey.shade700,
+                              color: out ==null || out == "00:00" ? Colors.greenAccent.shade400 : Colors.grey.shade700,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: Center(
