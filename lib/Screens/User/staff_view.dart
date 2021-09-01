@@ -63,8 +63,8 @@ class _StaffViewState extends State<StaffView> {
 
       mark = documentSnapshot.data()["timeIn"];
       out = documentSnapshot.data()["timeOut"];
-      EasyGeofencing.stopGeofenceService();
-      geofenceStatusStream.cancel();
+//      EasyGeofencing.stopGeofenceService();
+//      geofenceStatusStream.cancel();
       setState(() {
       });
       print("abeer");
@@ -545,11 +545,13 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( mark == null) {
+
                               EasyGeofencing.startGeofenceService(
-                                  pointedLatitude: "31.5883",
-                                  pointedLongitude: "74.7693",
+                                  pointedLatitude: "31.4883",
+                                  pointedLongitude: "74.2693",
                                   radiusMeter: "250",
-                                  eventPeriodInSeconds: 5);
+                                  eventPeriodInSeconds: 6400);
+                                   print(GeofenceStatus.values);
                               if (geofenceStatusStream == null) {
                                 geofenceStatusStream = EasyGeofencing.getGeofenceStream()
                                     .listen((GeofenceStatus status) {
@@ -558,8 +560,7 @@ class _StaffViewState extends State<StaffView> {
                                     Get.snackbar(
                                         "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
                                         backgroundColor: Colors.red);
-                                    EasyGeofencing.stopGeofenceService();
-                                    geofenceStatusStream.cancel();
+
                                     print("Exit");
                                   } else if (status.toString() == "GeofenceStatus.enter"){
                                    // MyHomePage();
@@ -572,7 +573,7 @@ class _StaffViewState extends State<StaffView> {
                                           "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
                                           backgroundColor: Colors.green);
                                     });
-                                    //getDailyAttendance();
+                                    getDailyAttendance();
                                   }
 //                                  setState(() {
 //                                    geofenceStatus = status.toString();
@@ -610,9 +611,10 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( out == null || out == "00:00") {
+                              print("aa");
                               EasyGeofencing.startGeofenceService(
-                                  pointedLatitude: "31.4883",
-                                  pointedLongitude: "74.2693",
+                                  pointedLatitude: "35.4883",
+                                  pointedLongitude: "77.2693",
                                   radiusMeter: "250",
                                   eventPeriodInSeconds: 5);
                               if (geofenceStatusStream == null) {
@@ -624,8 +626,7 @@ class _StaffViewState extends State<StaffView> {
                                     Get.snackbar(
                                         "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
                                         backgroundColor: Colors.red);
-                                    EasyGeofencing.stopGeofenceService();
-                                    geofenceStatusStream.cancel();
+
                                     print("Exit");
                                   } else if (status.toString() == "GeofenceStatus.enter"){
                                     getDateTime();
