@@ -3,6 +3,7 @@ import 'package:afar/Providers/StorageProvider.dart';
 import 'package:afar/Screens/Admin/user_attendance.dart';
 import 'package:afar/Screens/User/employeeRegistration.dart';
 import 'package:afar/Screens/User/login.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -238,11 +239,19 @@ class _AdminViewState extends State<AdminView> {
                                   child: Column(
                                     children: [
                                       ListTile(
-                                        leading: new CircleAvatar(
-                                          backgroundImage: new NetworkImage(
-                                              'https://i.pravatar.cc/150?img=3'),
-                                          backgroundColor: Colors.greenAccent.shade400,
-                                          radius: 28.0,
+                                        leading: CachedNetworkImage(
+                                          imageUrl: snapshot.data[index].data()["image"],
+                                          imageBuilder: (context, imageProvider) => Container(
+                                            width: 100.0,
+                                            height: 100.0,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                  image: imageProvider, fit: BoxFit.cover),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) => CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) => Icon(Icons.error),
                                         ),
                                         title: new Text(
                                           snapshot.data[index].data()["name"],

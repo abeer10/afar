@@ -11,6 +11,7 @@ class AuthProvider {
     String empId,
     String email,
     String password,
+    String image,
   ) async {
     try {
       UserCredential user = await auth.createUserWithEmailAndPassword(
@@ -20,7 +21,7 @@ class AuthProvider {
       await firestore
           .collection('users')
           .doc(user.user.uid)
-          .set({"name": name, "empId": empId, "email": email, "uid": user.user.uid, "approve": false});
+          .set({"name": name, "empId": empId, "email": email, "uid": user.user.uid, "approve": false, "image" : image} );
       return 'account created';
     } catch (e) {
       return 'Error occurred';

@@ -6,11 +6,12 @@ import 'package:afar/Screens/Admin/admin_view.dart';
 import 'package:afar/Screens/User/login.dart';
 import 'package:afar/Screens/profile.dart';
 import 'package:afar/face_detection/face_recognization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:easy_geofencing/easy_geofencing.dart';
 import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:get/get.dart';
@@ -27,15 +28,16 @@ class _StaffViewState extends State<StaffView> {
   var year;
   var month;
   var timeNow;
+
   DateTime now;
   int weekday, attendance;
   var percentage = 0.0;
   String mark, out;
   StreamSubscription<GeofenceStatus> geofenceStatusStream;
-  Geolocator geolocator = Geolocator();
+//  Geolocator geolocator = Geolocator();
   String geofenceStatus = '';
   bool isReady = false;
-  Position position;
+//  Position position;
 
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Future getAttendance() async {
@@ -65,6 +67,11 @@ class _StaffViewState extends State<StaffView> {
       out = documentSnapshot.data()["timeOut"];
 //      EasyGeofencing.stopGeofenceService();
 //      geofenceStatusStream.cancel();
+//    EasyGeofencing.startGeofenceService(
+//        pointedLatitude: "31.4883",
+//        pointedLongitude: "74.2693",
+//        radiusMeter: "250",
+//        eventPeriodInSeconds: 5);
       setState(() {
       });
       print("abeer");
@@ -72,6 +79,29 @@ class _StaffViewState extends State<StaffView> {
 
 
   }
+
+  startGeoFenceService(){
+    EasyGeofencing.startGeofenceService(
+        pointedLatitude: "31.4883",
+        pointedLongitude: "74.2693",
+        radiusMeter: "250",
+        eventPeriodInSeconds: 5);
+    Future.delayed(const Duration(milliseconds: 1000), () {
+
+      if (geofenceStatusStream == null) {
+        geofenceStatusStream = EasyGeofencing.getGeofenceStream()
+            .listen((GeofenceStatus status) {
+          geofenceStatus = status.toString();
+          print(status.toString());
+        });
+      }
+
+    });
+
+
+  }
+
+
 
   getDateTime() {
     DateTime now = DateTime.now();
@@ -108,6 +138,7 @@ class _StaffViewState extends State<StaffView> {
     timeNow = "${now.hour}:${now.minute}";
     getDailyAttendance();
     getAttendance();
+    startGeoFenceService();
     // TODO: implement initState
     super.initState();
   }
@@ -319,14 +350,21 @@ class _StaffViewState extends State<StaffView> {
                       padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
                       child: new Row(
                         children: [
-                          new Container(
-                            child: new CircleAvatar(
-                              backgroundImage: new NetworkImage(
-                                  'https://i.pravatar.cc/150?img=3'),
-                              backgroundColor: Colors.white,
-                              radius: 48.0,
-                            ),
+                        CachedNetworkImage(
+                        imageUrl: data['image'],
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: 100.0,
+                          height: 100.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.cover),
                           ),
+                        ),
+                        placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+
                           new Container(
                             padding: EdgeInsets.only(left: 7.0),
                             child: Column(
@@ -480,7 +518,7 @@ class _StaffViewState extends State<StaffView> {
                                         ),
                                       ),
                                       new Text(
-                                        percentage.toStringAsFixed(2),
+                                        percentage.toStringAsFixed(0) + "%",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -493,11 +531,19 @@ class _StaffViewState extends State<StaffView> {
                                 new Container(
                                   padding:
                                       EdgeInsets.fromLTRB(42.0, 40.0, 0.0, 40.0),
-                                  child: new CircleAvatar(
-                                    backgroundImage: new NetworkImage(
-                                        'https://i.pravatar.cc/150?img=3'),
-                                    backgroundColor: Colors.white,
-                                    radius: 28.0,
+                                  child: new CachedNetworkImage(
+                                    imageUrl: data["image"],
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      width: 100.0,
+                                      height: 100.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        image: DecorationImage(
+                                            image: imageProvider, fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => Icon(Icons.error),
                                   ),
                                 ),
                                 new Container(
@@ -545,41 +591,33 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( mark == null) {
-
-                              EasyGeofencing.startGeofenceService(
-                                  pointedLatitude: "31.4883",
-                                  pointedLongitude: "74.2693",
-                                  radiusMeter: "250",
-                                  eventPeriodInSeconds: 6400);
-                                   print(GeofenceStatus.values);
                               if (geofenceStatusStream == null) {
                                 geofenceStatusStream = EasyGeofencing.getGeofenceStream()
                                     .listen((GeofenceStatus status) {
+                                  geofenceStatus = status.toString();
                                   print(status.toString());
-                                  if(status.toString() == "GeofenceStatus.exit"){
-                                    Get.snackbar(
-                                        "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor: Colors.red);
-
-                                    print("Exit");
-                                  } else if (status.toString() == "GeofenceStatus.enter"){
-                                   // MyHomePage();
-                                    getDateTime();
-                                    StorageProvider()
-                                        .markAttendance(
-                                        dateNow, timeNow, year, month)
-                                        .then((value) {
-                                      Get.snackbar(
-                                          "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: Colors.green);
-                                    });
-                                    getDailyAttendance();
-                                  }
-//                                  setState(() {
-//                                    geofenceStatus = status.toString();
-//                                  });
                                 });
                               }
+                              if(geofenceStatus == "GeofenceStatus.exit"){
+                                Get.snackbar(
+                                    "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red);
+
+                                print("Exit");
+                              } else if (geofenceStatus == "GeofenceStatus.enter"){
+                                // MyHomePage();
+                                getDateTime();
+                                StorageProvider()
+                                    .markAttendance(
+                                    dateNow, timeNow, year, month)
+                                    .then((value) {
+                                  Get.snackbar(
+                                      "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.green);
+                                });
+                                getDailyAttendance();
+                              }
+
 
                             }
                               else {
@@ -611,40 +649,33 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( out == null || out == "00:00") {
-                              print("aa");
-                              EasyGeofencing.startGeofenceService(
-                                  pointedLatitude: "35.4883",
-                                  pointedLongitude: "77.2693",
-                                  radiusMeter: "250",
-                                  eventPeriodInSeconds: 5);
                               if (geofenceStatusStream == null) {
                                 geofenceStatusStream = EasyGeofencing.getGeofenceStream()
                                     .listen((GeofenceStatus status) {
+                                  geofenceStatus = status.toString();
                                   print(status.toString());
-                                  if(status.toString() == "GeofenceStatus.exit"){
-                                    print("abeer");
-                                    Get.snackbar(
-                                        "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor: Colors.red);
-
-                                    print("Exit");
-                                  } else if (status.toString() == "GeofenceStatus.enter"){
-                                    getDateTime();
-                                    StorageProvider()
-                                        .markAttendanceOut(
-                                        dateNow, timeNow, year, month)
-                                        .then((value) {
-                                      Get.snackbar(
-                                          "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
-                                          backgroundColor: Colors.green);
-                                    });
-                                    getDailyAttendance();
-                                  }
-//                                  setState(() {
-//                                    geofenceStatus = status.toString();
-//                                  });
                                 });
                               }
+                              if(geofenceStatus == "GeofenceStatus.exit"){
+                                Get.snackbar(
+                                    "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red);
+
+                                print("Exit");
+                              } else if (geofenceStatus == "GeofenceStatus.enter"){
+                                // MyHomePage();
+                                getDateTime();
+                                StorageProvider()
+                                    .markAttendanceOut(
+                                    dateNow, timeNow, year, month)
+                                    .then((value) {
+                                  Get.snackbar(
+                                      "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.green);
+                                });
+                                getDailyAttendance();
+                              }
+
 
                             }
                             else {

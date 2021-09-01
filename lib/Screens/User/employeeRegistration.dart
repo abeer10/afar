@@ -1,7 +1,12 @@
+import 'dart:math';
+
 import 'package:afar/Providers/AuthProvider.dart';
 import 'package:afar/Screens/User/staff_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'login.dart';
 
 class EmployeeRegistration extends StatefulWidget {
@@ -14,6 +19,46 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
   TextEditingController empIdController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  String imagePath = null;
+
+  _imgFromGallery() async {
+    File image = await  ImagePicker.pickImage(
+        source: ImageSource.gallery, imageQuality: 50
+    );
+    _uploadImageToFirebase(image);
+
+//    setState(() {
+//      _image = image;
+//    });
+  }
+
+
+
+  Future<void> _uploadImageToFirebase(File image) async {
+    try {
+      // Make random image name.
+      int randomNumber = Random().nextInt(100000);
+      String imageLocation = 'images/image${randomNumber}.jpg';
+
+      // Upload image to firebase.
+      final Reference storageReference = FirebaseStorage.instance.ref().child(imageLocation);
+      final UploadTask uploadTask = storageReference.putFile(image);
+      await uploadTask;
+      final TaskSnapshot downloadUrl = (await uploadTask);
+      imagePath = await downloadUrl.ref.getDownloadURL();
+      print(imagePath);
+      // await post();
+      setState(() {
+        imagePath = imagePath;
+      });
+//      setState(() {
+//        _saving = false;
+//      });
+    }catch(e){
+      print(e.message);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +95,38 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      imagePath != null ? InkWell(
+                        child: CachedNetworkImage(
+                          imageUrl: '$imagePath',
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 100.0,
+                            height: 100.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: imageProvider, fit: BoxFit.cover),
+                            ),
+                          ),
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+                        onTap: (){
+                          _imgFromGallery();
+                        },
+                      ) :  InkWell(
+                          onTap: (){
+                            _imgFromGallery();
+                          },
+                        child: Container(
+                          child: new CircleAvatar(
+                            backgroundImage: new NetworkImage(
+                                'https://i.pravatar.cc/150?img=3'),
+                            backgroundColor: Colors.white,
+                            radius: 60.0,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10,),
                       Material(
                         borderRadius: const BorderRadius.all(
                           const Radius.circular(30.0),
@@ -194,6 +271,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                               empIdController.text.trim(),
                               emailController.text.trim(),
                               passwordController.text.trim(),
+                              imagePath== null ? "https://i.pravatar.cc/150?img=3" : imagePath
                             )
                                 .then((value) {
                               if (value == 'account created') {

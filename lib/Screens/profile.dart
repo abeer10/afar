@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,13 +58,19 @@ class _ProfileState extends State<Profile> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(height: 50,),
-            Container(
-              child: new CircleAvatar(
-                backgroundImage: new NetworkImage(
-                    'https://i.pravatar.cc/150?img=3'),
-                backgroundColor: Colors.white,
-                radius: 60.0,
+            CachedNetworkImage(
+              imageUrl: user["image"],
+              imageBuilder: (context, imageProvider) => Container(
+                width: 100.0,
+                height: 100.0,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: imageProvider, fit: BoxFit.cover),
+                ),
               ),
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
             SizedBox(height: 50,),
             Padding(
@@ -100,7 +107,7 @@ class _ProfileState extends State<Profile> {
                       child: Icon(Icons.email, color: Colors.greenAccent.shade400, size: 30,),
                     ),
 
-                    Text(user["email"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,)
+                    Text(user["email"], style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,)
                   ],
                 ),
               ),
@@ -119,8 +126,8 @@ class _ProfileState extends State<Profile> {
                       padding: const EdgeInsets.all(8.0),
                       child: Icon(Icons.perm_identity_rounded, color: Colors.greenAccent.shade400, size: 30,),
                     ),
-                  widget.route != "admin" ?  Text(user["empId"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
-                  : Text("0000", style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
+                    Text(user["empId"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),),
+
                   ],
                 ),
               ),
