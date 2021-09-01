@@ -14,6 +14,7 @@ class _ProfileState extends State<Profile> {
 
   getUser()async {
     print(widget.route);
+    print(FirebaseAuth.instance.currentUser.uid);
     user =  await FirebaseFirestore.instance.collection(widget.route).doc(FirebaseAuth.instance.currentUser.uid).get();
     //print(user["email"]);
     setState(() {
@@ -67,9 +68,11 @@ class _ProfileState extends State<Profile> {
             SizedBox(height: 50,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Colors.white
+                ),
                 child: Row(
                   children: [
                     Padding(
@@ -77,7 +80,7 @@ class _ProfileState extends State<Profile> {
                       child: Icon(Icons.person, color: Colors.greenAccent.shade400, size: 30,),
                     ),
 
-                    Text(user["name"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
+                    Text(user["name"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis)
                   ],
                 ),
               ),
@@ -85,9 +88,11 @@ class _ProfileState extends State<Profile> {
             SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Colors.white
+                ),
                 child: Row(
                   children: [
                     Padding(
@@ -95,7 +100,7 @@ class _ProfileState extends State<Profile> {
                       child: Icon(Icons.email, color: Colors.greenAccent.shade400, size: 30,),
                     ),
 
-                    Text(user["email"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),)
+                    Text(user["email"], style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,)
                   ],
                 ),
               ),
@@ -103,9 +108,11 @@ class _ProfileState extends State<Profile> {
             SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Card(
-                color: Colors.white,
-                elevation: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Colors.white
+                ),
                 child: Row(
                   children: [
                     Padding(

@@ -1,5 +1,8 @@
 import 'package:afar/Providers/AuthProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'login.dart';
 
 class ForgotPassword extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
@@ -7,7 +10,12 @@ class ForgotPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Forgot Password"),
+        title: Text("Forgot Password", style: TextStyle(color: Colors.white),),
+        leading: InkWell(
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+            child: Icon(Icons.arrow_back_ios, color: Colors.white,)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -48,8 +56,24 @@ class ForgotPassword extends StatelessWidget {
                 minWidth: 200.0,
                 onPressed: () async {
                   var response = await AuthProvider().resetPassword(emailController.text.toString().trim());
-                  print(response.toString());
-                  print("abeer");
+                  if(response == null) {
+                    Get.snackbar(
+                        "This email didn't exist", "", snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red);
+                    Future.delayed(const Duration(milliseconds: 3000), () {
+                      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                          Login()), (Route<dynamic> route) => false);
+                    });
+                  } else{
+                    Get.snackbar(
+                        "Instructions sent to your email", "", snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green);
+                  }
+                  Future.delayed(const Duration(milliseconds: 3000), () {
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                        Login()), (Route<dynamic> route) => false);
+                  });
+
                   },
                 child: new Text(
                   'Send',
