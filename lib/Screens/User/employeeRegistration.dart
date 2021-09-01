@@ -117,13 +117,29 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                           onTap: (){
                             _imgFromGallery();
                           },
-                        child: Container(
-                          child: new CircleAvatar(
-                            backgroundImage: new NetworkImage(
-                                'https://i.pravatar.cc/150?img=3'),
-                            backgroundColor: Colors.white,
-                            radius: 60.0,
-                          ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              child: new CircleAvatar(
+                                backgroundImage: new AssetImage(
+                                    'images/avatar.png'),
+                                backgroundColor: Colors.white,
+                                radius: 60.0,
+                              ),
+                            ),
+                            Positioned(
+                              top: 70,
+                              left: 80,
+                              child: Container(
+                                child: new CircleAvatar(
+                                  backgroundImage: new AssetImage(
+                                      'images/camera.png'),
+                                  backgroundColor: Colors.white,
+                                  radius: 20.0,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(height: 10,),

@@ -64,6 +64,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - images/avatar.png
+    - images/camera.png
     - images/lgucard.jpg
 
 
