@@ -45,13 +45,6 @@ class _CheckLoginState extends State<CheckLogin> {
           builder: (context) => AdminView(),
         ),
       );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Login(),
-        ),
-      );
     }
   }
 

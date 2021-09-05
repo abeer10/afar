@@ -11,7 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:geolocator/geolocator.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:easy_geofencing/easy_geofencing.dart';
 import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:get/get.dart';
@@ -30,14 +31,15 @@ class _StaffViewState extends State<StaffView> {
   var timeNow;
 
   DateTime now;
-  int weekday, attendance;
+  int weekday, attendance, count=0;
   var percentage = 0.0;
   String mark, out;
   StreamSubscription<GeofenceStatus> geofenceStatusStream;
-//  Geolocator geolocator = Geolocator();
+  Geolocator geolocator = Geolocator();
   String geofenceStatus = '';
   bool isReady = false;
-//  Position position;
+  Position position;
+  double range;
 
   CollectionReference user = FirebaseFirestore.instance.collection('users');
   Future getAttendance() async {
@@ -55,7 +57,7 @@ class _StaffViewState extends State<StaffView> {
   }
 
   getDailyAttendance() async {
-    print("In");
+
     DocumentSnapshot documentSnapshot = await user
         .doc(FirebaseAuth.instance.currentUser.uid)
         .collection("attendance")
@@ -65,41 +67,21 @@ class _StaffViewState extends State<StaffView> {
 
       mark = documentSnapshot.data()["timeIn"];
       out = documentSnapshot.data()["timeOut"];
-//      EasyGeofencing.stopGeofenceService();
-//      geofenceStatusStream.cancel();
-//    EasyGeofencing.startGeofenceService(
-//        pointedLatitude: "31.4883",
-//        pointedLongitude: "74.2693",
-//        radiusMeter: "250",
-//        eventPeriodInSeconds: 5);
-      setState(() {
-      });
-      print("abeer");
-      print(mark);
 
 
   }
 
-  startGeoFenceService(){
+  startGeoFenceService() async {
+
+    position = await Geolocator.getCurrentPosition();
+    range = Geolocator.distanceBetween(31.4883, 74.2693, position.latitude, position.longitude);
     EasyGeofencing.startGeofenceService(
         pointedLatitude: "31.4883",
         pointedLongitude: "74.2693",
-        radiusMeter: "250",
+        radiusMeter: "500",
         eventPeriodInSeconds: 5);
-    Future.delayed(const Duration(milliseconds: 1000), () {
-
-      if (geofenceStatusStream == null) {
-        geofenceStatusStream = EasyGeofencing.getGeofenceStream()
-            .listen((GeofenceStatus status) {
-          geofenceStatus = status.toString();
-          print(status.toString());
-        });
-      }
-
-    });
-
-
   }
+
 
 
 
@@ -116,13 +98,10 @@ class _StaffViewState extends State<StaffView> {
     if(weekday == 7){
       ++attendance;
       percentage = ((attendance/now.day) * 100) ;
-//      setState(() {
-//
-//      });
+
     } else {
       percentage = ((attendance/now.day) * 100) ;
-//      setState(() {
-//      });
+
     }
   }
 
@@ -142,6 +121,8 @@ class _StaffViewState extends State<StaffView> {
     // TODO: implement initState
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -192,14 +173,21 @@ class _StaffViewState extends State<StaffView> {
                         padding: EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
                         child: new Row(
                           children: [
-                            new Container(
-                              child: new CircleAvatar(
-                                backgroundImage: new NetworkImage(
-                                    'https://i.pravatar.cc/150?img=3'),
-                                backgroundColor: Colors.white,
-                                radius: 48.0,
-                              ),
+                        CachedNetworkImage(
+                        imageUrl: data['image'],
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 100.0,
+                            height: 100.0,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                  image: imageProvider, fit: BoxFit.cover),
                             ),
+                          ),
+                          placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+
                             new Container(
                               padding: EdgeInsets.only(left: 7.0),
                               child: Column(
@@ -260,34 +248,7 @@ class _StaffViewState extends State<StaffView> {
                       color: Colors.greenAccent.shade400,
                       height: 3.0,
                     ),
-//                  new ListTile(
-//                    onTap: () {
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(
-//                          builder: (BuildContext context) {
-//                            return AdminView();
-//                          },
-//                        ),
-//                      );
-//                    },
-//                    contentPadding: EdgeInsets.only(left: 40.0),
-//                    leading: new Container(
-//                      child: Icon(
-//                        Icons.admin_panel_settings_outlined,
-//                        size: 35.0,
-//                        color: Colors.greenAccent.shade400,
-//                      ),
-//                    ),
-//                    title: new Text(
-//                      'Admin Panel',
-//                      style: TextStyle(color: Colors.black, fontSize: 14.0),
-//                    ),
-//                  ),
-//                  new Divider(
-//                    color: Colors.greenAccent.shade400,
-//                    height: 3.0,
-//                  ),
+
                     new ListTile(
                       onTap: () {
                         AuthProvider().userLogOut();
@@ -425,34 +386,6 @@ class _StaffViewState extends State<StaffView> {
                     color: Colors.greenAccent.shade400,
                     height: 3.0,
                   ),
-//                  new ListTile(
-//                    onTap: () {
-//                      Navigator.push(
-//                        context,
-//                        MaterialPageRoute(
-//                          builder: (BuildContext context) {
-//                            return AdminView();
-//                          },
-//                        ),
-//                      );
-//                    },
-//                    contentPadding: EdgeInsets.only(left: 40.0),
-//                    leading: new Container(
-//                      child: Icon(
-//                        Icons.admin_panel_settings_outlined,
-//                        size: 35.0,
-//                        color: Colors.greenAccent.shade400,
-//                      ),
-//                    ),
-//                    title: new Text(
-//                      'Admin Panel',
-//                      style: TextStyle(color: Colors.black, fontSize: 14.0),
-//                    ),
-//                  ),
-//                  new Divider(
-//                    color: Colors.greenAccent.shade400,
-//                    height: 3.0,
-//                  ),
                   new ListTile(
                     onTap: () {
                       AuthProvider().userLogOut();
@@ -534,8 +467,8 @@ class _StaffViewState extends State<StaffView> {
                                   child: new CachedNetworkImage(
                                     imageUrl: data["image"],
                                     imageBuilder: (context, imageProvider) => Container(
-                                      width: 100.0,
-                                      height: 100.0,
+                                      width: 60.0,
+                                      height: 60.0,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         image: DecorationImage(
@@ -591,31 +524,30 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( mark == null) {
-                              if (geofenceStatusStream == null) {
-                                geofenceStatusStream = EasyGeofencing.getGeofenceStream()
-                                    .listen((GeofenceStatus status) {
-                                  geofenceStatus = status.toString();
-                                  print(status.toString());
-                                });
-                              }
-                              if(geofenceStatus == "GeofenceStatus.exit"){
+//
+                              if(range > 500){
+
                                 Get.snackbar(
                                     "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.red);
 
                                 print("Exit");
-                              } else if (geofenceStatus == "GeofenceStatus.enter"){
-                                // MyHomePage();
+                              } else if (range <= 500){
+
                                 getDateTime();
                                 StorageProvider()
                                     .markAttendance(
                                     dateNow, timeNow, year, month)
                                     .then((value) {
+
                                   Get.snackbar(
                                       "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
                                       backgroundColor: Colors.green);
                                 });
+
                                 getDailyAttendance();
+                              } else {
+                                print("Noting");
                               }
 
 
@@ -649,26 +581,22 @@ class _StaffViewState extends State<StaffView> {
                         InkWell(
                           onTap: () {
                             if( out == null || out == "00:00") {
-                              if (geofenceStatusStream == null) {
-                                geofenceStatusStream = EasyGeofencing.getGeofenceStream()
-                                    .listen((GeofenceStatus status) {
-                                  geofenceStatus = status.toString();
-                                  print(status.toString());
-                                });
-                              }
-                              if(geofenceStatus == "GeofenceStatus.exit"){
+//
+                              if(range > 500){
+
                                 Get.snackbar(
                                     "You are not in range", "", snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.red);
 
                                 print("Exit");
-                              } else if (geofenceStatus == "GeofenceStatus.enter"){
-                                // MyHomePage();
+                              } else if (range <= 500){
+
                                 getDateTime();
                                 StorageProvider()
                                     .markAttendanceOut(
                                     dateNow, timeNow, year, month)
                                     .then((value) {
+
                                   Get.snackbar(
                                       "Attendance marked Successfully", "", snackPosition: SnackPosition.BOTTOM,
                                       backgroundColor: Colors.green);
@@ -842,79 +770,3 @@ class _StaffViewState extends State<StaffView> {
   }
 }
 
-class AttendanceCard extends StatefulWidget {
-  @override
-  _AttendanceCardState createState() => _AttendanceCardState();
-}
-
-class _AttendanceCardState extends State<AttendanceCard> {
-  final Stream<QuerySnapshot> attendanceStream = FirebaseFirestore.instance
-      .collection('users')
-      .doc("")
-      .collection("attendance")
-      .snapshots();
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: attendanceStream,
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-            ),
-          );
-        }
-
-        return new ListView(
-          children: snapshot.data.docs.map((DocumentSnapshot document) {
-            Map data = document.data();
-            new Container(
-              height: 70,
-              child: new Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                elevation: 5,
-                margin: EdgeInsets.all(10),
-                child: new Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    new Text(
-                      "${data['date']}",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: Colors.green.shade400,
-                    ),
-                    new Text(
-                      '8:00am',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                    new Text(
-                      '4:00pm',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-}

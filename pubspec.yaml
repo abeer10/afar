@@ -37,6 +37,7 @@ dependencies:
   geolocator:
   easy_geofencing:
   cached_network_image:
+  rxdart:
  
 
 

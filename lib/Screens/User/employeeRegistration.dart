@@ -27,9 +27,6 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
     );
     _uploadImageToFirebase(image);
 
-//    setState(() {
-//      _image = image;
-//    });
   }
 
 
@@ -51,9 +48,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
       setState(() {
         imagePath = imagePath;
       });
-//      setState(() {
-//        _saving = false;
-//      });
+
     }catch(e){
       print(e.message);
     }
@@ -200,7 +195,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                           controller: emailController,
                           decoration: InputDecoration(
                             labelText: 'EMAIL',
-                            hintText: 'example@lgu.edu.pk',
+                            hintText: 'example@gmail.com',
                             fillColor: Colors.white,
                             focusColor: Colors.greenAccent.shade400,
                             prefixIcon: Icon(
@@ -240,34 +235,6 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                         height: 20.0,
                       ),
 
-                      // new Material(
-                      //   elevation: 15.0,
-                      //   shadowColor: Colors.grey,
-                      //   borderRadius: const BorderRadius.all(
-                      //     const Radius.circular(30.0),
-                      //   ),
-                      //   child: Container(
-                      //     height: 60,
-                      //     child: Row(
-                      //       children: [
-                      //         IconButton(
-                      //           onPressed: () => debugPrint('Pick image'),
-                      //           icon: Icon(
-                      //             Icons.camera_alt_outlined,
-                      //             color: Colors.greenAccent.shade400,
-                      //           ),
-                      //         ),
-                      //         Text(
-                      //           'PICK EMPLOYEE ID IMAGE',
-                      //           style: TextStyle(
-                      //             fontSize: 16,
-                      //             color: Colors.grey.shade700,
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
                       SizedBox(
                         height: 40.0,
                       ),
@@ -287,7 +254,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                               empIdController.text.trim(),
                               emailController.text.trim(),
                               passwordController.text.trim(),
-                              imagePath== null ? "https://i.pravatar.cc/150?img=3" : imagePath
+                              imagePath== null ? "https://firebasestorage.googleapis.com/v0/b/afar-bda73.appspot.com/o/images%2Favatar-removebg-preview.png?alt=media&token=7f99d8ca-8e70-41d6-b448-0f52e80e47e0" : imagePath
                             )
                                 .then((value) {
                               if (value == 'account created') {
