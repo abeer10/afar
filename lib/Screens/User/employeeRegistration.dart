@@ -20,6 +20,7 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String imagePath = null;
+  bool _showPassword = false;
 
   _imgFromGallery() async {
     File image = await  ImagePicker.pickImage(
@@ -214,21 +215,41 @@ class _EmployeeRegistrationState extends State<EmployeeRegistration> {
                         borderRadius: const BorderRadius.all(
                           const Radius.circular(30.0),
                         ),
-                        child: new TextField(
-                          onEditingComplete: () => node.nextFocus(),
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            hintText: '**********',
-                            fillColor: Colors.white,
-                            focusColor: Colors.greenAccent.shade400,
-                            prefixIcon: Icon(
-                              Icons.security_outlined,
-                              color: Colors.greenAccent.shade400,
+                        child: Stack(
+                          children: [
+                            new TextField(
+                              controller: passwordController,
+                              obscureText: !this._showPassword,
+                              onEditingComplete: () => node.nextFocus(),
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                hintText: '**********',
+                                prefixIcon: Icon(
+                                  Icons.lock_rounded,
+                                  color: Colors.greenAccent.shade400,
+                                ),
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                              ),
                             ),
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                          ),
+                            Positioned.fill(
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.remove_red_eye_rounded,
+                                    color: this._showPassword
+                                        ? Colors.greenAccent.shade400
+                                        : Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() => this._showPassword =
+                                    !this._showPassword);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(

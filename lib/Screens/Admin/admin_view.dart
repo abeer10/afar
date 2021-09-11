@@ -234,71 +234,68 @@ class _AdminViewState extends State<AdminView> {
                                   },
                                   ));
                                 },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      ListTile(
-                                        leading: CachedNetworkImage(
-                                          imageUrl: snapshot.data[index].data()["image"],
-                                          imageBuilder: (context, imageProvider) => Container(
-                                            width: 100.0,
-                                            height: 100.0,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              image: DecorationImage(
-                                                  image: imageProvider, fit: BoxFit.cover),
-                                            ),
+                                child: Column(
+                                  children: [
+                                    ListTile(
+                                      leading: CachedNetworkImage(
+                                        imageUrl: snapshot.data[index].data()["image"],
+                                        imageBuilder: (context, imageProvider) => Container(
+                                          width: 100.0,
+                                          height: 100.0,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            image: DecorationImage(
+                                                image: imageProvider, fit: BoxFit.cover),
                                           ),
-                                          placeholder: (context, url) => CircularProgressIndicator(),
-                                          errorWidget: (context, url, error) => Icon(Icons.error),
                                         ),
-                                        title: new Text(
-                                          snapshot.data[index].data()["name"],
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        subtitle: new Text(snapshot.data[index].data()["email"],),
-                                        trailing: IconButton(
-                                          icon: Icon(Icons.delete, color: Colors.red,),
-                                          onPressed: () async {
-                                            await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser.uid).
-                                            delete().then((value){
-
-                                              Scaffold.of(context).showSnackBar(
-                                                  SnackBar(content: Text("User Deleted Successfully")));
-                                              setState(() {
-
-                                              });
-                                            });
-                                          },
-                                        )
+                                        placeholder: (context, url) => CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) => Icon(Icons.error),
                                       ),
-                                      snapshot.data[index].data()["approve"] == false ? InkWell(
-
-                                        child: Container(
-                                          child: Center(child: Text("Approve")),
-                                          height: 40,
-                                          color: Colors.greenAccent.shade400,
-                                        ),
-                                        onTap: () async {
-                                          print(FirebaseAuth.instance.currentUser.uid);
+                                      title: new Text(
+                                        snapshot.data[index].data()["name"],
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      subtitle: new Text(snapshot.data[index].data()["email"],),
+                                      trailing: IconButton(
+                                        icon: Icon(Icons.delete, color: Colors.red,),
+                                        onPressed: () async {
                                           await FirebaseFirestore.instance.collection("users").doc(snapshot.data[index].data()["uid"]).
-                                          update({"approve" : true}).then((value){
+                                          delete().then((value){
 
                                             Scaffold.of(context).showSnackBar(
-                                                SnackBar(content: Text("User Approved Successfully")));
+                                                SnackBar(content: Text("User Deleted Successfully")));
                                             setState(() {
 
                                             });
                                           });
                                         },
-                                      ) : Container(),
-                                  new Divider(
-                                    color: Colors.black,
-                                        height: 3.0,
+                                      )
+                                    ),
+                                    snapshot.data[index].data()["approve"] == false ? InkWell(
+
+                                      child: Container(
+                                        child: Center(child: Text("Approve")),
+                                        height: 40,
+                                        color: Colors.greenAccent.shade400,
                                       ),
-                                    ],
-                                  ),
+                                      onTap: () async {
+                                        print(FirebaseAuth.instance.currentUser.uid);
+                                        await FirebaseFirestore.instance.collection("users").doc(snapshot.data[index].data()["uid"]).
+                                        update({"approve" : true}).then((value){
+
+                                          Scaffold.of(context).showSnackBar(
+                                              SnackBar(content: Text("User Approved Successfully")));
+                                          setState(() {
+
+                                          });
+                                        });
+                                      },
+                                    ) : Container(),
+                                new Divider(
+                                  color: Colors.black,
+                                      height: 3.0,
+                                    ),
+                                  ],
                                 ),
                               );
                                          });

@@ -107,7 +107,10 @@ class _ProfileState extends State<Profile> {
                       child: Icon(Icons.email, color: Colors.greenAccent.shade400, size: 30,),
                     ),
 
-                    Text(user["email"], style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,)
+                    Expanded(
+                      child: Text(user["email"], style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic), overflow: TextOverflow.ellipsis,
+                      maxLines: 2,),
+                    )
                   ],
                 ),
               ),
