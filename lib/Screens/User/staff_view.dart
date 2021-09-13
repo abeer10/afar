@@ -67,7 +67,8 @@ class _StaffViewState extends State<StaffView> {
 
       mark = documentSnapshot.data()["timeIn"];
       out = documentSnapshot.data()["timeOut"];
-
+     setState(() {
+     });
 
   }
 
