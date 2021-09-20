@@ -10,6 +10,11 @@ class StorageProvider {
 
   Future markAttendance(String dateNow, String timeNow, String year, String month) async {
     try{
+
+      await firestore.collection('users').doc(auth.currentUser.uid).collection('attendance').doc(year).
+    set(({
+        'year' : year
+      }));
       await firestore.collection('users').doc(auth.currentUser.uid).collection('attendance').doc(year).
       collection(month).doc(dateNow)
         .set(({

@@ -16,6 +16,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:easy_geofencing/easy_geofencing.dart';
 import 'package:easy_geofencing/enums/geofence_status.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 // import 'package:image_picker/image_picker.dart';
 
@@ -77,8 +78,8 @@ class _StaffViewState extends State<StaffView> {
     position = await Geolocator.getCurrentPosition();
     range = Geolocator.distanceBetween(31.4883, 74.2693, position.latitude, position.longitude);
     EasyGeofencing.startGeofenceService(
-        pointedLatitude: "31.4883",
-        pointedLongitude: "74.2693",
+        pointedLatitude: "31.5010",
+        pointedLongitude: "74.3216",
         radiusMeter: "500",
         eventPeriodInSeconds: 5);
   }
@@ -88,10 +89,12 @@ class _StaffViewState extends State<StaffView> {
 
   getDateTime() {
     DateTime now = DateTime.now();
+    timeNow = DateFormat('hh:mm a').format(DateTime.now());
     dateNow = "${now.year}-${now.month}-${now.day}";
     year = now.year.toString();
     month = now.month.toString();
-    timeNow = "${now.hour}:${now.minute}";
+    print(timeNow);
+    //timeNow = "${now.hour}:${now.minute}";
   }
 
 
@@ -112,10 +115,12 @@ class _StaffViewState extends State<StaffView> {
   @override
   void initState() {
     now = DateTime.now();
+    timeNow = DateFormat('hh:mm a').format(DateTime.now());
     dateNow = "${now.year}-${now.month}-${now.day}";
     year = now.year.toString();
     month = now.month.toString();
-    timeNow = "${now.hour}:${now.minute}";
+    //timeNow = "${now.hour}:${now.minute}";
+    print(timeNow);
     getDailyAttendance();
     getAttendance();
     startGeoFenceService();
@@ -128,10 +133,12 @@ class _StaffViewState extends State<StaffView> {
   @override
   Widget build(BuildContext context) {
      now = DateTime.now();
+     timeNow = DateFormat('hh:mm a').format(DateTime.now());
      dateNow = "${now.year}-${now.month}-${now.day}";
      year = now.year.toString();
      month = now.month.toString();
-     timeNow = "${now.hour}:${now.minute}";
+     print(timeNow);
+     //timeNow = "${now.hour}:${now.minute}";
     getAttendance();
    // getDailyAttendance();
 
